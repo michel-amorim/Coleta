@@ -3,10 +3,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
 import { Map, Marker, TileLayer } from "react-leaflet";
-import api from "../../services/api";
 
 import "./styles.css";
 import logo from "../../assets/logo.svg";
+import api from "../../services/api";
 
 interface Item {
   albumId: number;
