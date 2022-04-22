@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
@@ -9,7 +9,7 @@ import "./styles.css";
 import logo from "../../assets/logo.svg";
 import api from "../../services/api";
 
-interface Item {
+interface Photo {
   albumId: number;
   id: number;
   title: string;
@@ -18,7 +18,7 @@ interface Item {
 }
 
 const CreateLocation: React.FC = () => {
-  const [Items, setItems] = useState<Item[]>([]);
+  const [photos, setPhotos] = useState<Photo[]>([]);
 
   const [selectedMapPosition, setSelectedMapPosition] = useState<
     [number, number]
@@ -32,11 +32,11 @@ const CreateLocation: React.FC = () => {
     uf: "",
   });
 
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [selectedPhotos, setSelectedPhotos] = useState<number[]>([]);
 
   useEffect(() => {
     api.get("").then((response) => {
-      setItems(response.data);
+      setPhotos(response.data);
     });
   }, []);
 
@@ -50,14 +50,35 @@ const CreateLocation: React.FC = () => {
   }
 
   function handleSelectedPhoto(id: number) {
-    const alreadyselected = selectedItems.findIndex((item) => item === id);
+    const alreadyselected = selectedPhotos.findIndex((item) => item === id);
 
     if (alreadyselected >= 0) {
-      const filteredItems = selectedItems.filter((item) => item !== id);
-      setSelectedItems(filteredItems);
+      const filteredPhotos = selectedPhotos.filter((item) => item !== id);
+      setSelectedPhotos(filteredPhotos);
     } else {
-      setSelectedItems([...selectedItems, id]);
+      setSelectedPhotos([...selectedPhotos, id]);
     }
+  }
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+
+    const { city, email, name, uf, whatsapp } = formData;
+    const [latitude, longetude] = selectedMapPosition;
+    const items = selectedPhotos;
+
+    const data = {
+      city,
+      email,
+      name,
+      uf,
+      whatsapp,
+      latitude,
+      longetude,
+      items,
+    };
+
+    await api.post("location", data);
   }
 
   return (
@@ -71,7 +92,7 @@ const CreateLocation: React.FC = () => {
           </Link>
         </header>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <h1>
             Cadastro do <br /> local de coleta
           </h1>
@@ -154,16 +175,18 @@ const CreateLocation: React.FC = () => {
               <span>Você pode marcar um ou mais ítens</span>
             </legend>
             <ul className="items-grid">
-              {Items.map((Items) => (
+              {photos.map((photos) => (
                 <li
-                  key={Items.id}
-                  onClick={() => handleSelectedPhoto(Items.id)}
-                  className={selectedItems.includes(Items.id) ? "selected" : ""}
+                  key={photos.id}
+                  onClick={() => handleSelectedPhoto(photos.id)}
+                  className={
+                    selectedPhotos.includes(photos.id) ? "selected" : ""
+                  }
                 >
                   <img
                     className="img-grid-control"
-                    src={Items.url}
-                    alt={Items.title}
+                    src={photos.url}
+                    alt={photos.title}
                   />
                 </li>
               ))}
