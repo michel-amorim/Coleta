@@ -15,6 +15,8 @@ interface Photo {
   title: string;
   url: string;
   thumbnailUrl: string;
+  page: number;
+  postsPerPage: number;
 }
 
 const CreateLocation: React.FC = () => {
@@ -175,21 +177,23 @@ const CreateLocation: React.FC = () => {
               <span>Você pode marcar um ou mais ítens</span>
             </legend>
             <ul className="items-grid">
-              {photos.map((photos) => (
-                <li
-                  key={photos.id}
-                  onClick={() => handleSelectedPhoto(photos.id)}
-                  className={
-                    selectedPhotos.includes(photos.id) ? "selected" : ""
-                  }
-                >
-                  <img
-                    className="img-grid-control"
-                    src={photos.url}
-                    alt={photos.title}
-                  />
-                </li>
-              ))}
+              {photos
+                .map((photos) => (
+                  <li
+                    key={photos.id}
+                    onClick={() => handleSelectedPhoto(photos.id)}
+                    className={
+                      selectedPhotos.includes(photos.id) ? "selected" : ""
+                    }
+                  >
+                    <img
+                      className="img-grid-control"
+                      src={photos.url}
+                      alt={photos.title}
+                    />
+                  </li>
+                ))
+                .slice(0, 6)}
             </ul>
           </fieldset>
 
