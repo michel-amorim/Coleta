@@ -15,12 +15,16 @@ interface Photo {
   title: string;
   url: string;
   thumbnailUrl: string;
-  page: number;
-  postsPerPage: number;
 }
 
 const CreateLocation: React.FC = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
+
+  useEffect(() => {
+    api.get("").then((response) => {
+      setPhotos(response.data);
+    });
+  }, []);
 
   const [selectedMapPosition, setSelectedMapPosition] = useState<
     [number, number]
@@ -35,12 +39,6 @@ const CreateLocation: React.FC = () => {
   });
 
   const [selectedPhotos, setSelectedPhotos] = useState<number[]>([]);
-
-  useEffect(() => {
-    api.get("").then((response) => {
-      setPhotos(response.data);
-    });
-  }, []);
 
   function handleMapClick(event: LeafletMouseEvent): void {
     setSelectedMapPosition([event.latlng.lat, event.latlng.lng]);
