@@ -1,4 +1,10 @@
-import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import { Link } from "react-router-dom";
 import { FiArrowLeft } from "react-icons/fi";
@@ -40,46 +46,55 @@ const CreateLocation: React.FC = () => {
 
   const [selectedPhotos, setSelectedPhotos] = useState<number[]>([]);
 
-  function handleMapClick(event: LeafletMouseEvent): void {
+  const handleMapClick = useCallback((event: LeafletMouseEvent): void => {
     setSelectedMapPosition([event.latlng.lat, event.latlng.lng]);
-  }
+  }, []);
 
-  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
-    setFormData({ ...formData, [name]: value });
-  }
+  const handleInputChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = event.target;
+      setFormData({ ...formData, [name]: value });
+    },
+    [formData]
+  );
 
-  function handleSelectedPhoto(id: number) {
-    const alreadyselected = selectedPhotos.findIndex((item) => item === id);
+  const handleSelectedPhoto = useCallback(
+    (id: number) => {
+      const alreadyselected = selectedPhotos.findIndex((item) => item === id);
 
-    if (alreadyselected >= 0) {
-      const filteredPhotos = selectedPhotos.filter((item) => item !== id);
-      setSelectedPhotos(filteredPhotos);
-    } else {
-      setSelectedPhotos([...selectedPhotos, id]);
-    }
-  }
+      if (alreadyselected >= 0) {
+        const filteredPhotos = selectedPhotos.filter((item) => item !== id);
+        setSelectedPhotos(filteredPhotos);
+      } else {
+        setSelectedPhotos([...selectedPhotos, id]);
+      }
+    },
+    [selectedPhotos]
+  );
 
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+  const handleSubmit = useCallback(
+    async (event: FormEvent) => {
+      event.preventDefault();
 
-    const { city, email, name, uf, whatsapp } = formData;
-    const [latitude, longetude] = selectedMapPosition;
-    const items = selectedPhotos;
+      const { city, email, name, uf, whatsapp } = formData;
+      const [latitude, longetude] = selectedMapPosition;
+      const items = selectedPhotos;
 
-    const data = {
-      city,
-      email,
-      name,
-      uf,
-      whatsapp,
-      latitude,
-      longetude,
-      items,
-    };
+      const data = {
+        city,
+        email,
+        name,
+        uf,
+        whatsapp,
+        latitude,
+        longetude,
+        items,
+      };
 
-    await api.post("location", data);
-  }
+      await api.post("location", data);
+    },
+    [formData, selectedMapPosition, selectedPhotos]
+  );
 
   return (
     <div id="page-create-location">
