@@ -14,6 +14,7 @@ import { LeafletMouseEvent } from "leaflet";
 import "./styles.css";
 import logo from "../../assets/logo.svg";
 import api from "../../services/api";
+import Dropzone from "../../components/Dropzone/drop";
 
 interface Photo {
   albumId: number;
@@ -45,6 +46,8 @@ const CreateLocation: React.FC = () => {
   });
 
   const [selectedPhotos, setSelectedPhotos] = useState<number[]>([]);
+
+  const [selectedFile, setSelectedFile] = useState<File>();
 
   const handleMapClick = useCallback((event: LeafletMouseEvent): void => {
     setSelectedMapPosition([event.latlng.lat, event.latlng.lng]);
@@ -80,18 +83,22 @@ const CreateLocation: React.FC = () => {
       const [latitude, longetude] = selectedMapPosition;
       const items = selectedPhotos;
 
-      const data = {
-        city,
-        email,
-        name,
-        uf,
-        whatsapp,
-        latitude,
-        longetude,
-        items,
-      };
+      const data = new FormData();
+      data.append("name", name);
+      data.append("city", city);
+      data.append("email", email);
+      data.append("uf", uf);
+      data.append("whatsapp", whatsapp);
+      data.append("latitude", String(latitude));
+      data.append("longetude", String(longetude));
+      data.append("items", items.join("."));
+      if (selectedFile) {
+        data.append("image", selectedFile);
+      }
 
       await api.post("location", data);
+
+      alert("Estabelecimento cadastrado com sucesso!");
     },
     [formData, selectedMapPosition, selectedPhotos]
   );
@@ -115,6 +122,9 @@ const CreateLocation: React.FC = () => {
             <legend>
               <h2>Dados</h2>
             </legend>
+
+            <Dropzone onFileUploaded={setSelectedFile} />
+
             <div className="field">
               <label htmlFor="name">Nome da entidade</label>
               <input
