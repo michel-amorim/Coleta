@@ -15,6 +15,7 @@ import "./styles.css";
 import logo from "../../assets/logo.svg";
 import api from "../../services/api";
 import Dropzone from "../../components/Dropzone/drop";
+import { useNavigate } from "react-router-dom";
 
 interface Photo {
   albumId: number;
@@ -46,6 +47,8 @@ const CreateLocation: React.FC = () => {
   });
 
   const [selectedPhotos, setSelectedPhotos] = useState<number[]>([]);
+
+  const history = useNavigate();
 
   const [selectedFile, setSelectedFile] = useState<File>();
 
@@ -99,6 +102,8 @@ const CreateLocation: React.FC = () => {
       await api.post("location", data);
 
       alert("Estabelecimento cadastrado com sucesso!");
+
+      history("/");
     },
     [formData, selectedMapPosition, selectedPhotos]
   );
